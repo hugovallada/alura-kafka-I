@@ -13,12 +13,6 @@
     <artifactId>service-new-order</artifactId>
     <dependencies>
         <dependency>
-            <groupId>org.example</groupId>
-            <artifactId>com.github.hugovallada.kafka</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.hugovallada.kafka</groupId>
             <artifactId>common-kafka</artifactId>
             <version>1.0-SNAPSHOT</version>
