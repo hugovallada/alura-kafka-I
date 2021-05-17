@@ -3,13 +3,13 @@ package com.github.hugovallada.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-
+import java.util.HashMap;
 
 
 public class FraudDetectorService {
     public static void main(String[] args) {
         var fraudService = new FraudDetectorService();
-        try(var service = new KafkaService<>(FraudDetectorService.class.getSimpleName(),"ECOMMERCE_NEW_ORDER", fraudService::parse, Order.class)) {
+        try(var service = new KafkaService<>(FraudDetectorService.class.getSimpleName(),"ECOMMERCE_NEW_ORDER", fraudService::parse, Order.class, new HashMap<String, String>())) {
             service.run();
         }
     }
