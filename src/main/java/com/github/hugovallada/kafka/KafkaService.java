@@ -12,23 +12,23 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class KafkaService implements Closeable {
-    private final KafkaConsumer<String, String> consumer;
+public class KafkaService<T> implements Closeable {
+    private final KafkaConsumer<String, T> consumer;
     private final ConsumerFunction parse;
 
-    KafkaService(String groupdId,String topic, ConsumerFunction parse) {
-        this(parse, groupdId);
+    KafkaService(String groupdId, String topic, ConsumerFunction parse, Class<T> type) {
+        this(parse, groupdId, type);
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    public KafkaService(String groupdId, Pattern topic, ConsumerFunction parse) {
-        this(parse,groupdId);
+    public KafkaService(String groupdId, Pattern topic, ConsumerFunction parse, Class<T> type) {
+        this(parse,groupdId,type);
         consumer.subscribe(topic);
     }
 
-    private KafkaService(ConsumerFunction parse, String groupdId) {
+    private KafkaService(ConsumerFunction parse, String groupdId, Class<T> type) {
         this.parse = parse;
-        this.consumer = new KafkaConsumer<>(properties(groupdId));
+        this.consumer = new KafkaConsumer<>(properties(groupdId, type));
     }
 
     void run(){
@@ -41,13 +41,14 @@ public class KafkaService implements Closeable {
         }
     }
 
-    private static Properties properties(String groupdId) {
+    private Properties properties(String groupdId, Class<T> type) {
         var properties = new Properties();
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, GsonDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupdId);
         properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
+        properties.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
 
         return properties;
     }
